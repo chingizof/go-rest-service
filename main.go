@@ -24,18 +24,21 @@ func validMailAddress(address string) (string, bool) {
 }
 
 func mailChecker(w http.ResponseWriter, r *http.Request) {
-	var newEmail string
+	var newEmail []string
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "Kindly enter data with the event title and description only in order to update")
 	}
 
 	json.Unmarshal(reqBody, &newEmail)
-	_, ok := validMailAddress(newEmail)
-	if ok {
-		fmt.Fprintf(w, "accepted email")
-	} else {
-		fmt.Fprint(w, "rejected")
+	for _, v := range newEmail {
+		_, ok := validMailAddress(v)
+		if ok {
+			v += " "
+			fmt.Fprintf(w, v)
+		} else {
+			fmt.Fprint(w, "rejected")
+		}
 	}
 	w.WriteHeader(http.StatusCreated)
 }
