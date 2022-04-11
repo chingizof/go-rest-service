@@ -12,6 +12,5 @@ func SqlConnect() *sql.DB {
 		fmt.Println(err)
 	}
 
-	fmt.Println("success")
 	return db
 }

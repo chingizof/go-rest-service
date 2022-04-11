@@ -45,6 +45,7 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", handlers.HomeLink)
 	router.HandleFunc("/rest/email/check", handlers.MailChecker) //task 2
+	router.HandleFunc("/rest/iin/check", handlers.IinChecker)    //task 2 harder
 	router.HandleFunc("/rest/substr/find", handlers.MaxSubstr)   //task1
 	router.HandleFunc("/rest/redisusers", handlers.UsersHandler) //task 3 partly
 	router.HandleFunc("/rest/user", handlers.AddUser)            //task 4, add in format ["name", "surname"]

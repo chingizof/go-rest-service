@@ -161,3 +161,37 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 
 	defer insert.Close()
 }
+
+func IinChecker(w http.ResponseWriter, r *http.Request) {
+	var IIN []string
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the event title and description only in order to update")
+	}
+	json.Unmarshal(reqBody, &IIN)
+	ans := ""
+
+	for _, v := range IIN {
+		if len(v) != 12 {
+			fmt.Println("1")
+			continue
+		} else if v[6] > '6' {
+			fmt.Println("2")
+			continue
+		} else if v[0] > '3' {
+			fmt.Println("3")
+			continue
+		} else if v[0] == '3' && v[1] > '1' {
+			fmt.Println("4")
+			continue
+		} else if v[2] > '1' {
+			fmt.Println("5")
+			continue
+		} else if v[2] == '1' && v[3] > '2' {
+			fmt.Println("6")
+			continue
+		}
+		ans += v + " "
+	}
+	fmt.Fprintf(w, ans)
+} //0309175
