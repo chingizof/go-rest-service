@@ -8,8 +8,15 @@ import (
 	"net/mail"
 	"time"
 
+	"github.com/chingizof/go-rest-service/db"
 	"github.com/chingizof/go-rest-service/redisconn"
 )
+
+type User struct {
+	ID        int    `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
 
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -133,4 +140,24 @@ func MailChecker(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+func AddUser(w http.ResponseWriter, r *http.Request) {
+	forms := []string{}
+	db := db.SqlConnect()
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the event title and description only in order to update")
+	}
+
+	json.Unmarshal(reqBody, &forms)
+	name, surname := forms[0], forms[1]
+
+	insert, err := db.Query("INSERT INTO user VALUES(0, '" + name + "', '" + surname + "');")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer insert.Close()
 }
