@@ -18,11 +18,15 @@ type User struct {
 	LastName  string `json:"lastName"`
 }
 
+type Counter struct {
+	Value int `json:"value"`
+}
+
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		red := redisconn.GetRedisConnection()
-		res, err := red.Get("user").Result()
+		res, err := red.Get("value").Result()
 		if err != nil {
 			http.Error(w, "Error!", 404)
 			return
@@ -31,6 +35,7 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(res))
 	case "POST":
 		body, err := ioutil.ReadAll(r.Body)
+
 		if err != nil {
 			http.Error(w, "Internal server error", 500)
 			return
@@ -38,16 +43,29 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
 		red := redisconn.GetRedisConnection()
-		_, err = red.SetNX("user", body, 60*time.Second).Result()
+		_, err = red.SetNX("value", body, 60*time.Second).Result()
 		if err != nil {
 			http.Error(w, "Internal server error", 500)
 			return
 
 		}
+		IncOne(body)
 		w.Write([]byte(body))
 
 	}
 
+}
+
+func IncOne(body []byte) []byte {
+	for i := len(body) - 1; i >= 0; i-- {
+		if body[i] != '9' {
+			body[i] += 1
+			break
+		} else {
+			continue
+		}
+	}
+	return body
 }
 
 func LongestSubstr(str string) string {
